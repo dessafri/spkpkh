@@ -398,3 +398,11 @@ function buatHasil(){
 
 
 }
+
+function dataPerbandingan($data){
+
+    global $conn;
+    $return = array();
+    $dataPeserta = query("SELECT peserta.id_peserta, peserta.nama, peserta.label, perangkingan.nilai_perangkingan FROM peserta JOIN perangkingan ON peserta.id_peserta = perangkingan.id_peserta WHERE peserta.label LIKE '%$data%'");
+    echo json_encode($dataPeserta);
+}

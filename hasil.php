@@ -84,8 +84,24 @@ if($total["total"] > 1){
                 </table>
             </div>
             <div class="alternatifPerbatasanMabac" style="margin-bottom: 100px;">
-                <h2>Perangkingan PKH</h2>
-                <table id="tabel5" class="table table-striped table-bordered" style="width: 100%">
+                <h2>Perbandingan</h2>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <select class="form-control" id="exampleFormControlSelect1">
+                                <option value="0">Pilih Label</option>
+                                <?php
+                        $datalabel = query("SELECT DISTINCT label FROM peserta");
+                        foreach($datalabel as $data):
+                        ?>
+                                <option value="<?= $data['label']?>"><?= $data["label"]?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <table id="tabel5" class="table table-striped table-bordered" style="width: 100%">
                     <thead class="table-data">
                         <tr>
                             <th>No</th>
@@ -108,7 +124,8 @@ if($total["total"] > 1){
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
-                </table>
+                </table> -->
+                <div id="tabelPerbandingan"></div>
             </div>
         </div>
 
@@ -164,36 +181,97 @@ if($total["total"] > 1){
             .buttons()
             .container()
             .appendTo("#tabel4_wrapper .col-md-6:eq(0)");
-        var table = $("#tabel5").DataTable({
-            lengthChange: true,
-            buttons: [{
-                    extend: "excel",
-                    text: "Export Excel",
-                    className: "btn-success",
-                },
-                {
-                    extend: "spacer",
-                    style: "bar",
-                },
-                {
-                    extend: "pdf",
-                    text: "Export PDF",
-                    className: "btn-danger"
-                },
-                {
-                    extend: "spacer",
-                    style: "bar",
-                },
-                {
-                    extend: "colvis",
-                    text: "SORTIR"
-                },
-            ],
+        $('select').on('change', function() {
+            let val = this.value;
+            document.cookie = "value = " + val
+            <?php
+            $php_var_val= $_COOKIE['value'];
+            ?>
+            let tabel = `
+                    <div class="row">
+                    <div class="col-6">
+                        <p class="font-weight-bold">Tabel Peserta</p>
+                        <table id="tabel5" class="table table-striped table-bordered" style="width: 100%">
+                            <thead class="table-data">
+                                <tr>
+                                    <th>No</th>
+                                    <th>PESERTA</th>
+                                    <th>LABEL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $dataPeserta = query("SELECT peserta.id_peserta, peserta.nama, peserta.label, perangkingan.nilai_perangkingan FROM peserta JOIN perangkingan ON peserta.id_peserta = perangkingan.id_peserta WHERE peserta.label LIKE '%$php_var_val%'");
+                        $index = 1;
+                        foreach($dataPeserta as $dataPeserta):
+                        ?>
+                        <tr>
+                            <td><?= $index++?></td>
+                            <td><?= $dataPeserta["nama"]?></td>
+                            <td><?= $dataPeserta["label"] ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <p class="font-weight-bold">Tabel Perangkingan</p>
+                        <table id="tabel6" class="table table-striped table-bordered" style="width: 100%">
+                            <thead class="table-data">
+                                <tr>
+                                    <th>No</th>
+                                    <th>PESERTA</th>
+                                    <th>NILAI</th>
+                                    <th>LABEL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $dataPeserta = query("SELECT peserta.id_peserta, peserta.nama, peserta.label, perangkingan.nilai_perangkingan FROM peserta JOIN perangkingan ON peserta.id_peserta = perangkingan.id_peserta WHERE peserta.label LIKE '%$php_var_val%'");
+                        $index = 1;
+                        foreach($dataPeserta as $dataPeserta):
+                        ?>
+                        <tr>
+                            <td><?= $index++?></td>
+                            <td><?= $dataPeserta["nama"]?></td>
+                            <td><?= $dataPeserta["nilai_perangkingan"]?></td>
+                            <td><?= $dataPeserta["label"] ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                    `
+            $('#tabelPerbandingan').html(tabel);
+            var table = $("#tabel5").DataTable({
+                lengthChange: true,
+            });
+            table
+                .buttons()
+                .container()
+                .appendTo("#tabel5_wrapper .col-md-6:eq(0)");
+            var table = $("#tabel6").DataTable({
+                lengthChange: true,
+            });
+            table
+                .buttons()
+                .container()
+                .appendTo("#tabel6_wrapper .col-md-6:eq(0)");
+            // if (val == 0) {} else {
+            //     let formData = new FormData();
+            //     formData.append('value', val);
+            //     fetch('dataperbandingan.php', {
+            //         method: 'post',
+            //         body: formData
+            //     }).then(response => {
+            //         return response.json()
+            //     }).then(response => {
+            //         console.log(response)
+
+            //     })
+            // }
         });
-        table
-            .buttons()
-            .container()
-            .appendTo("#tabel5_wrapper .col-md-6:eq(0)");
     });
     </script>
 </body>
