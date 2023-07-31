@@ -174,7 +174,7 @@ if($total["total"] > 1){
                     </tbody>
                 </table>
             </div>
-            <div class="menghitung-bobot-entropy" style="margin-bottom:100px; width:100%">
+            <div class="menghitung-bobot-entropy" style="margin-bottom:50px; width:100%">
                 <h2>Jarak Terkecil</h2>
                 <div class="container">
                     <div class="row">
@@ -207,6 +207,19 @@ if($total["total"] > 1){
                         <?php endforeach; ?>
                     </div>
                 </div>
+            </div>
+            <div id="perhitunganakurasi" style="margin-bottom: 50px;">
+                <?php
+                $datapkh = query("SELECT COUNT(id_peserta) as total_pkh FROM peserta WHERE label LIKE '%PKH%'");
+                $databp = query("SELECT COUNT(id_peserta) as total_bp FROM peserta WHERE label LIKE '%Bukan Penerima%'");
+                $datablt = query("SELECT COUNT(id_peserta) as total_blt FROM peserta WHERE label LIKE '%BLT - DD%'");
+                $databst = query("SELECT COUNT(id_peserta) as total_bst FROM peserta WHERE label LIKE '%BST%'");
+                $total = (($datapkh[0]['total_pkh']*$databp[0]['total_bp']*$datablt[0]['total_blt']*$databst[0]['total_bst']) / ($datapkh[0]['total_pkh']*$databp[0]['total_bp']*$datablt[0]['total_blt']*$databst[0]['total_bst'])) * 100;
+                ?>
+                <h2>RUMUS AKURASI</h2>
+                <p>(PKH x BUKAN PENERIMA x BLT x BST) / (PKH x BUKAN PENERIMA x BLT x BST)</p>
+                <span>(<?=$datapkh[0]['total_pkh']?> x <?=$databp[0]['total_bp']?> x <?=$datablt[0]['total_blt']?> x <?=$databst[0]['total_bst']?>) / </span><span>(<?=$datapkh[0]['total_pkh']?> x <?=$databp[0]['total_bp']?> x <?=$datablt[0]['total_blt']?> x <?=$databst[0]['total_bst']?>)</span> <br>
+                <span class="d-inline-block mt-2 font-weight-bold">TOTAL AKURASI : <?= $total ?> % </span>
             </div>
         </div>
     </section>
